@@ -7,28 +7,28 @@ using namespace std;
 
 int main()
 {
-    const string URL = "mails.json"; // шлях до файлу
-    ifstream f(URL, ifstream::binary); // відкриття файлу в бінарному режимі
-    string line; // змінна для зчитування построчно
-    if (!f.is_open()) { // перевірка на те, чи файл відкритий
+    const string URL = "mails.json"; 
+    ifstream f(URL, ifstream::binary); 
+    string line; 
+    if (!f.is_open()) {
         cout << "File was not opened!";
     }
-    long idCount = 0; // змінна для першого завдання
+    long idCount = 0; 
 
-    string s; // змінна для другого завдання
+    string s; 
     set<string> arr, subjCopy, subjAm;
-    multiset<string> subj; // сети для другого та п'ятого завдання
+    multiset<string> subj; 
     multiset<string>::iterator subjit = subj.begin();
-    string weekDays[] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" }; // масив днів тижня для третього та шостого завдання
-    int daysCounts[7], daysCountMax[7]; // для третього та шостого завдання
+    string weekDays[] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" }; 
+    int daysCounts[7], daysCountMax[7]; 
     for (int i = 0; i < 7; i++) {
         daysCounts[i] = 0;
         daysCountMax[i] = 0;
     }
-    int EtoS = 0; // для четвертого
+    int EtoS = 0; // Г¤Г«Гї Г·ГҐГІГўГҐГ°ГІГ®ГЈГ®
     int StoE = 0;
 
-    // ЗАДАЧА 5
+
     int posXFrom5;
     int posDate5;
     int XFromSize5;
@@ -43,77 +43,73 @@ int main()
     string DataObj5;
     int idx5 = 0;
     int* arr5 = new int[subj.size()];
-    // ЗАДАЧА 6
+
     int dayIdx;
     int maxDay;
     int sum = 0;
-    while (getline(f, line)) { // читання файлу построчно
-        if (line.find("_id") != -1) { // перше завдання, перевіряємо, чи є ідентифікатор в кожному рядку, якщо так, то рахуємо як лист
+    while (getline(f, line)) { 
+        if (line.find("_id") != -1) {
             idCount++;
         }
-        // Друге завдання, визначаємо кількість унікальних відправників листів
-        // Для цього витягуємо їх усіх і записуємо в сет (контейнер, де дублікати ігноруються)
+
         for (size_t i = line.find("\"From\"") + 10; i < line.find("\", \"Subject\"")
             && i < line.find("\", \"X-Folder\"")
             && i < line.find("\", \"To\" : \"ned"); i++) {
             s += line[i];
         }
         arr.insert(s);
-        s = ""; // обнулення рядка з відправником
+        s = ""; 
 
-        // Третє завдання
-        for (int a = 0; a < 7; a++) { // прохід по масиву з днями тижня
-            if (line.find(weekDays[a]) != -1) { // Якщо такий день тижня присутній у рядку
+
+        for (int a = 0; a < 7; a++) { 
+            if (line.find(weekDays[a]) != -1) {
                 int posTo = line.find("\"To\"") + 8;
-                string toObj = line.substr(posTo, line.length() - posTo); // обробка і пошук частини рядка, де знаходиться той, кому відправляють лист
+                string toObj = line.substr(posTo, line.length() - posTo); 
                 toObj = toObj.substr(0, toObj.find("\""));
-                if (toObj.find("ebass@enron.com") != -1) { // Якщо там потрібна нам людина
-                    daysCounts[a]++; // Додаємо кількість до визначеного дня
+                if (toObj.find("ebass@enron.com") != -1) {
+                    daysCounts[a]++;
                 }
             }
         }
-        // Четверте завдання
+
         int posXTo = line.find("\"X-To\"") + 10;
         int posMesId = line.find("\"Message-ID\"") - 3;
         int XToSize = posMesId - posXTo;
-        string xToObj = line.substr(posXTo, XToSize); // обробка і пошук частини рядка, де знаходиться той, кому відправляють лист
+        string xToObj = line.substr(posXTo, XToSize); 
         int posXFrom = line.find("\"X-From\"") + 10;
         int posDate = line.find("\"Date\"") - 3;
         int XFromSize = posDate - posXFrom;
-        string xFromObj = line.substr(posXFrom, XFromSize); // обробка і пошук частини рядка, де знаходиться той, хто відправляє лист
-        if (xToObj.find("Eric Bass") != -1 && xFromObj.find("Shanna Husser") != -1) { // Умови для виконання завдання (Еріку від Шанни)
+        string xFromObj = line.substr(posXFrom, XFromSize); 
+        if (xToObj.find("Eric Bass") != -1 && xFromObj.find("Shanna Husser") != -1) {
             EtoS++;
         }
-        else if (xToObj.find("Shanna Husser") != -1 && xFromObj.find("Eric Bass") != -1) { // (Шанне від Еріка)
+        else if (xToObj.find("Shanna Husser") != -1 && xFromObj.find("Eric Bass") != -1) {
             StoE++;
         }
 
-        // П'яте завдання
-        // Пошук відправника
+
         posXFrom5 = line.find("\"X-From\"") + 10;
         posDate5 = line.find("\"Date\"") - 3;
         XFromSize5 = posDate5 - posXFrom5;
         xFromObj5 = line.substr(posXFrom5, XFromSize5);
-        // Пошук предмету 
+
         posSubj5 = line.find("\"Subject\"") + 13;
         posXFolder5 = line.find("\"X-Folder\"") - 3;
         subjSize5 = posXFolder5 - posSubj5;
         subjObj5 = line.substr(posSubj5, subjSize5);
-        // Пошук дати
+  
         posDate5_1 = line.find("\"Date\"") + 10;
         posXTo5 = line.find("\"X-To\"");
         DataSize5 = posXTo5 - posDate5_1;
         DataObj5 = line.substr(posDate5_1, DataSize5);
-        // Якщо відправник Лора і дата містить в собі 2000-ий рік, то додаємо в сет
+ 
         if (xFromObj5.find("Laurie Ellis") != -1 && DataObj5.find("2000") != -1) {
             subj.insert(subjObj5);
         }
     }
 
-    // Лічильник для кількості
-    // закриваємо файл
     f.close();
-    ifstream fin(URL, ifstream::binary); // відкриття знову
+    ifstream fin(URL, ifstream::binary); 
     while (getline(fin, line))
     {
 
@@ -122,18 +118,18 @@ int main()
         int xToPos6 = line.find("\"X-To\"");
         xToPos6 -= 3;
         int dateSize6 = xToPos6 - datePos6;
-        string DateObj6 = line.substr(datePos6, dateSize6); // Пошук дати
-        for (size_t a = 0; a < 7; a++) { // Прохід по масиву з днями тижня
-            if (DateObj6.find(weekDays[a]) != -1) { // Шукаємо дні в частині рядка з датою
-                daysCountMax[a]++; // додаємо до кількості
+        string DateObj6 = line.substr(datePos6, dateSize6); 
+        for (size_t a = 0; a < 7; a++) {
+            if (DateObj6.find(weekDays[a]) != -1) { 
+                daysCountMax[a]++; 
             }
         }
-        // Пошук максимального числа в масиві
-        maxDay = daysCountMax[0]; // призначаємо тимчасово змінній MAX перший елемент масиву
-        for (size_t i = 0; i < 7; i++) { // Прохід по масиву
-            if (maxDay < daysCountMax[i]) { // Перевірка не більше чи проходимий елемент нашого тимчасового максимума
-                maxDay = daysCountMax[i]; // Якщо так, призначаємо нове значення
-                dayIdx = i; // Запам'ятовуємо індекс
+
+        maxDay = daysCountMax[0]; 
+        for (size_t i = 0; i < 7; i++) { Гі
+            if (maxDay < daysCountMax[i]) { 
+                maxDay = daysCountMax[i];
+                dayIdx = i; 
             }
         }
     }
@@ -143,7 +139,7 @@ int main()
     for (auto a : arr) {
         fout << a << endl;
     }
-    // Вивід результатів
+
     cout << "Id count: " << idCount << endl;
     cout << "From count: " << arr.size() << endl;
     cout << "Eric to Shanna: " << EtoS << endl;
